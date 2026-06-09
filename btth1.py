@@ -2,6 +2,30 @@ raw_logs = []
 processed_logs = []
 
 
+def input_raw_data():
+    global raw_logs
+    str_input = input("Nhập chuỗi log thô (cách nhau bởi dấu ;): ")
+    table = str_input.maketrans("", "", "!@#$")
+    str_input = str_input.translate(table)
+    new_list = str_input.split(";")
+    raw_logs.extend(new_list)
+    print(f"Đã làm sạch và lưu {len(new_list)} dòng log vào hệ thống.")
+
+
+def warning_raw_logs():
+    global processed_logs
+    global raw_logs
+    count = 0
+    processed_logs.clear()
+    for log in raw_logs:
+        if "ERROR" in log or "CRITICAL" in log:
+            processed_logs.append(log)
+            count += 1
+    print(f"Tìm thấy {count} cảnh báo nguy hiểm:")
+    for pro_log in processed_logs:
+        print(f"- {pro_log}")
+
+
 def clean_logs(log_text):
     table = str.maketrans("", "", "!@#$")
     cleaned_text = log_text.translate(table)
@@ -12,10 +36,6 @@ def clean_logs(log_text):
 
 def filter_danger_logs():
     global raw_logs
-
-    if not raw_logs:
-        print("Chưa có dữ liệu log, vui lòng thực hiện chức năng 1")
-        return []
 
     danger_logs = [
         log for log in raw_logs
@@ -54,20 +74,10 @@ while True:
             print("Chọn từ 1 - 4")
     match choice:
         case 1:
-            print("--- NẠP DỮ LIỆU LOG ---")
-            log_input = input("Nhập chuỗi log thô (cách nhau bởi dấu ;): ")
-            raw_logs = clean_logs(log_input)
-            print(f"Đã làm sạch và lưu {len(raw_logs)} dòng log vào hệ thống.")
+            input_raw_data()
 
         case 2:
-            print("--- LỌC CẢNH BÁO ---")
-            processed_logs = filter_danger_logs()
-            if processed_logs:
-                print(f"Tìm thấy {len(processed_logs)} cảnh báo nguy hiểm:")
-                for log in processed_logs:
-                    print(f"- {log}")
-            elif raw_logs:
-                print("Không tìm thấy cảnh báo nguy hiểm.")
+            warning_raw_logs()
         case 3:
             print("--- MÃ HÓA IP ---")
             if not raw_logs:
